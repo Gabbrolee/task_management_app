@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_management_app/common/utils/constant.dart';
+import 'package:task_management_app/common/utils/context_extension.dart';
 import 'package:task_management_app/common/widget/app_style.dart';
 import 'package:task_management_app/common/widget/custom_button.dart';
 import 'package:task_management_app/common/widget/custom_textfield.dart';
@@ -132,7 +133,7 @@ class _AddTaskScreenState extends ConsumerState<UpdateTaskScreen> {
                     ref.read(startTimeStateProvider.notifier).setStart("");
                     ref.read(finishTimeStateProvider.notifier).setStart("");
                     ref.read(dateStateProvider.notifier).setDate("");
-                    Navigator.pop(context);
+                    context.pop();
                   } else {
                     print("fail to add task");
                   }

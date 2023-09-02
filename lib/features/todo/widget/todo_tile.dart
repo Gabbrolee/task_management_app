@@ -5,8 +5,7 @@ import 'package:task_management_app/common/utils/constant.dart';
 import 'package:task_management_app/common/widget/app_style.dart';
 import 'package:task_management_app/common/widget/height_spacer.dart';
 import 'package:task_management_app/common/widget/width_spacer.dart';
-
-import '../../../common/widget/reusable_text.dart';
+import 'package:task_management_app/common/widget/reusable_text.dart';
 
 class TodoTile extends StatelessWidget {
   const TodoTile(

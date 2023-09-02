@@ -9,7 +9,7 @@ class CodeState extends _$CodeState{
     return "";
   }
 
-  void setStart(String newState){
-    state = newState;
+   setStart(String newState){
+     state = newState;
   }
 }

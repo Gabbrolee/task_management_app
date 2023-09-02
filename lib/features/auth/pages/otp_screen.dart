@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pinput/pinput.dart';
 import 'package:task_management_app/common/utils/constant.dart';
 import 'package:task_management_app/common/widget/app_style.dart';
 import 'package:task_management_app/common/widget/height_spacer.dart';
 import 'package:task_management_app/common/widget/reusable_text.dart';
 
-class OtpScreen extends StatelessWidget {
-  const OtpScreen({Key? key}) : super(key: key);
+import '../../../common/widget/alert_dialog.dart';
+import '../providers/auth_provider.dart';
+
+class OtpScreen extends ConsumerWidget {
+  const OtpScreen({Key? key, required this.smsCodeId, required this.phone})
+      : super(key: key);
+  final String smsCodeId;
+  final String phone;
+
+  void verifyOtpCode(BuildContext context, WidgetRef ref, String smsCode) {
+    ref.read(authControllerProvider).verifyOtpCode(
+        context: context,
+        smsCodeId: smsCodeId,
+        smsCode: smsCode,
+        mounted: true);
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -35,14 +50,17 @@ class OtpScreen extends StatelessWidget {
               Pinput(
                 length: 6,
                 showCursor: true,
-                onCompleted: (value){
-                  if(value.length==6){
-
+                onCompleted: (value) {
+                  if (value.length == 6) {
+                    return verifyOtpCode(context, ref, value);
+                  } else {
+                    showAlertDialog(
+                        context: context, message: "you enter wrong code");
                   }
                 },
-                onSubmitted: (value){
-                  if(value.length == 6){
-
+                onSubmitted: (value) {
+                  if (value.length == 6) {
+                    return verifyOtpCode(context, ref, value);
                   }
                 },
               )

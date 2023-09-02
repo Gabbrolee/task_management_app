@@ -1,14 +1,14 @@
 
-class User {
+class UserModel {
   final int id;
   final int isVerified;
 
-  User({
+  UserModel({
     required this.id,
     required this.isVerified,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
     id: json["id"],
     isVerified: json["isVerified"],
   );

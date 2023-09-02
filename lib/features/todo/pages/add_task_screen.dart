@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:task_management_app/common/utils/constant.dart';
+import 'package:task_management_app/common/utils/context_extension.dart';
+import 'package:task_management_app/common/widget/alert_dialog.dart';
 import 'package:task_management_app/common/widget/app_style.dart';
 import 'package:task_management_app/common/widget/custom_button.dart';
 import 'package:task_management_app/common/widget/custom_textfield.dart';
 import 'package:task_management_app/common/widget/height_spacer.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
+import 'package:task_management_app/features/todo/pages/home_page.dart';
 import 'package:task_management_app/features/todo/providers/dates/date_provider.dart';
-
+import '../../../common/constant/route.dart';
+import '../../../common/helpers/notification_helper.dart';
 import '../../../common/model/task_model.dart';
 import '../providers/todo_provider.dart';
+import 'package:task_management_app/common/utils/datetime_extension.dart';
 
 class AddTaskScreen extends ConsumerStatefulWidget {
   const AddTaskScreen({Key? key}) : super(key: key);
@@ -23,6 +28,22 @@ class AddTaskScreen extends ConsumerStatefulWidget {
 class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
   final TextEditingController addTitle = TextEditingController();
   final TextEditingController addDescription = TextEditingController();
+  List<int> notification = [];
+  late NotificationHelper notifierHelper;
+  late NotificationHelper controller;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    notifierHelper = NotificationHelper(ref: ref);
+    Future.delayed(const Duration(seconds: 0), (){
+      controller = NotificationHelper(ref: ref);
+    });
+    notifierHelper.initializeNotification();
+    super.initState();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheduleDate = ref.watch(dateStateProvider);
@@ -77,7 +98,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                           showTitleActions: true,
                           onConfirm: (date) {
                         ref.read(startTimeStateProvider.notifier).setStart(date.toString());
-
+                       notification = ref.read(startTimeStateProvider.notifier).dates(date);
                           }, locale: picker.LocaleType.en);
                     },
                     height: 52.h,
@@ -91,7 +112,6 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                           showTitleActions: true,
                           onConfirm: (date) {
                             ref.read(finishTimeStateProvider.notifier).setStart(date.toString());
-
                           }, locale: picker.LocaleType.en);
                     },
                     height: 52.h,
@@ -116,13 +136,20 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                       remind: 0,
                       repeat: 'yes'
                     );
+
                     ref.read(todoStateProvider.notifier).addTodoItem(task);
+                    notifierHelper.scheduleNotification(
+                        notification[0],
+                        notification[1],
+                        notification[2],
+                        notification[3],
+                        task);
                     ref.read(startTimeStateProvider.notifier).setStart("");
                     ref.read(finishTimeStateProvider.notifier).setStart("");
                     ref.read(dateStateProvider.notifier).setDate("");
-                    Navigator.pop(context);
+                    context.pushNamed(Routes.homeScreen);
                   }else {
-                    print("fail to add task");
+                    showAlertDialog(context: context, message: "Failed to add task");
                   }
                 },
                 height: 52.h,

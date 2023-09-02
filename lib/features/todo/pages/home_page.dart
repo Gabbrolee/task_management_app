@@ -2,35 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:task_management_app/common/helpers/notification_helper.dart';
 import 'package:task_management_app/common/utils/constant.dart';
+import 'package:task_management_app/common/utils/context_extension.dart';
 import 'package:task_management_app/common/widget/custom_textfield.dart';
 import 'package:task_management_app/common/widget/height_spacer.dart';
 import 'package:task_management_app/common/widget/reusable_text.dart';
 import 'package:task_management_app/common/widget/width_spacer.dart';
-import 'package:task_management_app/features/todo/pages/add_task_screen.dart';
 import 'package:task_management_app/features/todo/providers/todo_provider.dart';
 import 'package:task_management_app/features/todo/widget/completed_tasks.dart';
+import '../../../common/constant/route.dart';
 import '../../../common/widget/app_style.dart';
 import '../widget/day_after_tomorrow_tasks.dart';
 import '../widget/today_task.dart';
 import '../widget/tomorrow_task.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomeScreen extends ConsumerStatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
+  ConsumerState<HomeScreen> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage>
+class _HomePageState extends ConsumerState<HomeScreen>
     with TickerProviderStateMixin {
+
   final TextEditingController search = TextEditingController();
   late final TabController tabController =
       TabController(length: 2, vsync: this);
+  late NotificationHelper notifierHelper;
+  late NotificationHelper controller;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    ref.read(todoStateProvider);
+    notifierHelper = NotificationHelper(ref: ref);
+    Future.delayed(const Duration(seconds: 0), (){
+      controller = NotificationHelper(ref: ref);
+    });
+    notifierHelper.initializeNotification();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(todoStateProvider);
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -57,13 +75,7 @@ class _HomePageState extends ConsumerState<HomePage>
                             color: AppConstant.kLight,
                             borderRadius: BorderRadius.all(Radius.circular(9))),
                         child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddTaskScreen()));
-                          },
+                          onTap: ()=>  context.pushNamed(Routes.addTaskScreen),
                           child: const Icon(
                             Icons.add,
                             color: AppConstant.kBkDark,
